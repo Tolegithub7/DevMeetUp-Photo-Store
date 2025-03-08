@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { supabase } from "../utils/supabaseClient";
 
 export default function AuthForm(){
     const [isNewUser, setIsNewUser] = useState(false);
@@ -10,7 +11,14 @@ export default function AuthForm(){
 
     async function handleSignUp(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
-        console.log("Sign up with email:", email);
+        const {data, error} = await supabase.auth.signUp({
+            email,
+            password
+        })
+        if(!error) {
+            setIsSigningUp(true);
+        }
+        console.log({data, error});
     }
 
     async function handleLogIn(e: React.FormEvent<HTMLFormElement>){
@@ -25,7 +33,7 @@ export default function AuthForm(){
         signInMessage = 'Sign Up';
     }
 
-    const signUpMessage = <p className="text-center text-white">Email sent! Check your email to confirm sign up.</p>
+    const signUpMessage = <p className="text-center text-green-600 font-medium">Email sent! Check your email to confirm sign up.</p>
 
     return (
         <form onSubmit={isNewUser ? handleSignUp : handleLogIn } className="space-y-8 mt-12 border border-gray-300 p-8 rounded-lg shadow-lg max-w-lg mx-auto hover:border-green-400 flex justify-center flex-col items-center">
